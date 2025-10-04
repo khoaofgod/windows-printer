@@ -38,6 +38,9 @@ partial class Form1
         customHeightTextBox = new TextBox();
         borderlessCheckBox = new CheckBox();
         orientationComboBox = new ComboBox();
+        printerPresetTextBox = new TextBox();
+        printerPresetLabel = new Label();
+        configurePresetButton = new Button();
         selectPhotoButton = new Button();
         printButton = new Button();
         previewPictureBox = new PictureBox();
@@ -144,9 +147,36 @@ partial class Form1
         orientationComboBox.Size = new Size(145, 28);
         orientationComboBox.TabIndex = 27;
         //
+        // printerPresetTextBox
+        //
+        printerPresetTextBox.Location = new Point(120, 465);
+        printerPresetTextBox.Name = "printerPresetTextBox";
+        printerPresetTextBox.PlaceholderText = "Leave empty to use settings above";
+        printerPresetTextBox.Size = new Size(300, 27);
+        printerPresetTextBox.TabIndex = 28;
+        //
+        // printerPresetLabel
+        //
+        printerPresetLabel.AutoSize = true;
+        printerPresetLabel.Location = new Point(20, 468);
+        printerPresetLabel.Name = "printerPresetLabel";
+        printerPresetLabel.Size = new Size(92, 20);
+        printerPresetLabel.TabIndex = 29;
+        printerPresetLabel.Text = "Printer Preset:";
+        //
+        // configurePresetButton
+        //
+        configurePresetButton.Location = new Point(430, 463);
+        configurePresetButton.Name = "configurePresetButton";
+        configurePresetButton.Size = new Size(90, 30);
+        configurePresetButton.TabIndex = 30;
+        configurePresetButton.Text = "Configure...";
+        configurePresetButton.UseVisualStyleBackColor = true;
+        configurePresetButton.Click += ConfigurePresetButton_Click;
+        //
         // selectPhotoButton
         //
-        selectPhotoButton.Location = new Point(120, 470);
+        selectPhotoButton.Location = new Point(120, 505);
         selectPhotoButton.Name = "selectPhotoButton";
         selectPhotoButton.Size = new Size(150, 35);
         selectPhotoButton.TabIndex = 8;
@@ -157,7 +187,7 @@ partial class Form1
         // printButton
         //
         printButton.Enabled = false;
-        printButton.Location = new Point(290, 470);
+        printButton.Location = new Point(290, 505);
         printButton.Name = "printButton";
         printButton.Size = new Size(130, 35);
         printButton.TabIndex = 9;
@@ -347,6 +377,9 @@ partial class Form1
         Controls.Add(previewPictureBox);
         Controls.Add(printButton);
         Controls.Add(selectPhotoButton);
+        Controls.Add(configurePresetButton);
+        Controls.Add(printerPresetLabel);
+        Controls.Add(printerPresetTextBox);
         Controls.Add(orientationComboBox);
         Controls.Add(borderlessCheckBox);
         Controls.Add(customHeightTextBox);
@@ -375,6 +408,9 @@ partial class Form1
     private TextBox customHeightTextBox;
     private CheckBox borderlessCheckBox;
     private ComboBox orientationComboBox;
+    private TextBox printerPresetTextBox;
+    private Label printerPresetLabel;
+    private Button configurePresetButton;
     private Button selectPhotoButton;
     private Button printButton;
     private PictureBox previewPictureBox;

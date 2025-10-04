@@ -24,6 +24,10 @@ public partial class Form1 : Form
     private string tmpFolder = "";
     private string readyPrintsFolder = "";
 
+    // Store custom printer settings when using preset
+    private PageSettings? savedPresetPageSettings = null;
+    private PrinterSettings? savedPresetPrinterSettings = null;
+
     public Form1()
     {
         InitializeComponent();
@@ -262,6 +266,42 @@ public partial class Form1 : Form
         customHeightTextBox.Enabled = isCustom;
     }
 
+    private void ConfigurePresetButton_Click(object? sender, EventArgs e)
+    {
+        // Get the first checked printer
+        if (printerCheckedListBox.CheckedItems.Count == 0)
+        {
+            MessageBox.Show("Please select a printer first.", "No Printer Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        string printerName = printerCheckedListBox.CheckedItems[0]?.ToString()!;
+
+        // Create a PrintDialog to let user configure printer settings
+        using PrintDialog printDialog = new PrintDialog();
+        printDialog.PrinterSettings = new PrinterSettings();
+        printDialog.PrinterSettings.PrinterName = printerName;
+        printDialog.AllowSomePages = false;
+        printDialog.AllowSelection = false;
+        printDialog.AllowCurrentPage = false;
+
+        // Show the print dialog so user can select preset and configure settings
+        if (printDialog.ShowDialog() == DialogResult.OK)
+        {
+            // Save the configured settings
+            savedPresetPrinterSettings = printDialog.PrinterSettings;
+            savedPresetPageSettings = printDialog.PrinterSettings.DefaultPageSettings;
+
+            string presetName = printerPresetTextBox.Text;
+            if (string.IsNullOrWhiteSpace(presetName))
+            {
+                printerPresetTextBox.Text = "Custom Settings Saved";
+            }
+
+            MessageBox.Show($"Printer settings saved! These settings will be used when printing.", "Settings Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
+
     private void SelectPhotoButton_Click(object? sender, EventArgs e)
     {
         using OpenFileDialog openFileDialog = new OpenFileDialog
@@ -338,6 +378,34 @@ public partial class Form1 : Form
         using PrintDocument printDoc = new PrintDocument();
         printDoc.PrinterSettings.PrinterName = printerName;
         printDoc.PrintPage += PrintDocument_PrintPage;
+
+        // Check if using saved printer preset/settings
+        bool usePreset = !string.IsNullOrWhiteSpace(printerPresetTextBox.Text) && savedPresetPrinterSettings != null;
+
+        if (usePreset)
+        {
+            // Use the saved preset settings configured via "Configure..." button
+            // ALL app settings (orientation, paper size, layout, etc.) are IGNORED
+            System.Diagnostics.Debug.WriteLine($"Using saved printer preset/settings: {printerPresetTextBox.Text}");
+            System.Diagnostics.Debug.WriteLine("Ignoring all manual settings - using preset configuration only");
+
+            // Copy all settings from the saved preset
+            if (savedPresetPrinterSettings != null)
+            {
+                printDoc.PrinterSettings = savedPresetPrinterSettings;
+            }
+
+            if (savedPresetPageSettings != null)
+            {
+                printDoc.DefaultPageSettings = savedPresetPageSettings;
+            }
+
+            // Print directly with preset settings - skip all custom configuration below
+            printDoc.Print();
+            return;
+        }
+
+        // === Manual Settings Mode (only used when NO preset is configured) ===
 
         // Set orientation
         int orientationIndex = orientationComboBox.SelectedIndex;
