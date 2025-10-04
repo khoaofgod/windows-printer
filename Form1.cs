@@ -10,6 +10,24 @@ public class PrintFile
     public string download_link { get; set; } = "";
 }
 
+public class AppSettings
+{
+    public string? PaperSize { get; set; }
+    public string? CustomWidth { get; set; }
+    public string? CustomHeight { get; set; }
+    public string? PaperSource { get; set; }
+    public string? PaperType { get; set; }
+    public string? Layout { get; set; }
+    public string? PrintQuality { get; set; }
+    public string? Orientation { get; set; }
+    public bool Borderless { get; set; }
+    public string? PrinterPreset { get; set; }
+    public string? TopMargin { get; set; }
+    public string? BottomMargin { get; set; }
+    public string? LeftMargin { get; set; }
+    public string? RightMargin { get; set; }
+}
+
 public partial class Form1 : Form
 {
     private string? selectedImagePath;
@@ -26,7 +44,7 @@ public partial class Form1 : Form
 
     // Store custom printer settings when using preset
     private PageSettings? savedPresetPageSettings = null;
-    private PrinterSettings? savedPresetPrinterSettings = null;
+    private System.Drawing.Printing.PrinterSettings? savedPresetPrinterSettings = null;
 
     public Form1()
     {
@@ -77,7 +95,7 @@ public partial class Form1 : Form
         }
 
         string printerName = printerCheckedListBox.CheckedItems[0]?.ToString()!;
-        PrinterSettings ps = new PrinterSettings();
+        System.Drawing.Printing.PrinterSettings ps = new System.Drawing.Printing.PrinterSettings();
         ps.PrinterName = printerName;
 
         string sizes = $"Available paper sizes for {printerName}:\n\n";
@@ -144,13 +162,13 @@ public partial class Form1 : Form
             // Fall back to default printer
             if (string.IsNullOrEmpty(printerName))
             {
-                PrinterSettings ps = new PrinterSettings();
+                System.Drawing.Printing.PrinterSettings ps = new System.Drawing.Printing.PrinterSettings();
                 printerName = ps.PrinterName;
             }
 
             if (!string.IsNullOrEmpty(printerName))
             {
-                PrinterSettings printerSettings = new PrinterSettings();
+                System.Drawing.Printing.PrinterSettings printerSettings = new System.Drawing.Printing.PrinterSettings();
                 printerSettings.PrinterName = printerName;
 
                 foreach (PaperSource source in printerSettings.PaperSources)
@@ -279,7 +297,7 @@ public partial class Form1 : Form
 
         // Create a PrintDialog to let user configure printer settings
         using PrintDialog printDialog = new PrintDialog();
-        printDialog.PrinterSettings = new PrinterSettings();
+        printDialog.PrinterSettings = new System.Drawing.Printing.PrinterSettings();
         printDialog.PrinterSettings.PrinterName = printerName;
         printDialog.AllowSomePages = false;
         printDialog.AllowSelection = false;
@@ -299,6 +317,137 @@ public partial class Form1 : Form
             }
 
             MessageBox.Show($"Printer settings saved! These settings will be used when printing.", "Settings Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
+
+    private void SaveSettingsToolStripMenuItem_Click(object? sender, EventArgs e)
+    {
+        using SaveFileDialog saveFileDialog = new SaveFileDialog
+        {
+            Filter = "JSON Files|*.json|All Files|*.*",
+            Title = "Save Settings",
+            DefaultExt = "json",
+            FileName = "printer_settings.json"
+        };
+
+        if (saveFileDialog.ShowDialog() == DialogResult.OK)
+        {
+            try
+            {
+                var settings = new AppSettings
+                {
+                    PaperSize = paperSizeComboBox.SelectedItem?.ToString(),
+                    CustomWidth = customWidthTextBox.Text,
+                    CustomHeight = customHeightTextBox.Text,
+                    PaperSource = paperSourceComboBox.SelectedItem?.ToString(),
+                    PaperType = paperTypeComboBox.SelectedItem?.ToString(),
+                    Layout = layoutComboBox.SelectedItem?.ToString(),
+                    PrintQuality = printQualityComboBox.SelectedItem?.ToString(),
+                    Orientation = orientationComboBox.SelectedItem?.ToString(),
+                    Borderless = borderlessCheckBox.Checked,
+                    PrinterPreset = printerPresetTextBox.Text,
+                    TopMargin = topMarginTextBox.Text,
+                    BottomMargin = bottomMarginTextBox.Text,
+                    LeftMargin = leftMarginTextBox.Text,
+                    RightMargin = rightMarginTextBox.Text
+                };
+
+                string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(saveFileDialog.FileName, json);
+
+                MessageBox.Show("Settings saved successfully!", "Save Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving settings: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
+    private void LoadSettingsToolStripMenuItem_Click(object? sender, EventArgs e)
+    {
+        using OpenFileDialog openFileDialog = new OpenFileDialog
+        {
+            Filter = "JSON Files|*.json|All Files|*.*",
+            Title = "Load Settings"
+        };
+
+        if (openFileDialog.ShowDialog() == DialogResult.OK)
+        {
+            try
+            {
+                string json = File.ReadAllText(openFileDialog.FileName);
+                var settings = JsonSerializer.Deserialize<AppSettings>(json);
+
+                if (settings != null)
+                {
+                    // Apply settings to UI controls (except printer list)
+                    if (!string.IsNullOrEmpty(settings.PaperSize))
+                    {
+                        int index = paperSizeComboBox.Items.IndexOf(settings.PaperSize);
+                        if (index >= 0) paperSizeComboBox.SelectedIndex = index;
+                    }
+
+                    if (!string.IsNullOrEmpty(settings.CustomWidth))
+                        customWidthTextBox.Text = settings.CustomWidth;
+
+                    if (!string.IsNullOrEmpty(settings.CustomHeight))
+                        customHeightTextBox.Text = settings.CustomHeight;
+
+                    if (!string.IsNullOrEmpty(settings.PaperSource))
+                    {
+                        int index = paperSourceComboBox.Items.IndexOf(settings.PaperSource);
+                        if (index >= 0) paperSourceComboBox.SelectedIndex = index;
+                    }
+
+                    if (!string.IsNullOrEmpty(settings.PaperType))
+                    {
+                        int index = paperTypeComboBox.Items.IndexOf(settings.PaperType);
+                        if (index >= 0) paperTypeComboBox.SelectedIndex = index;
+                    }
+
+                    if (!string.IsNullOrEmpty(settings.Layout))
+                    {
+                        int index = layoutComboBox.Items.IndexOf(settings.Layout);
+                        if (index >= 0) layoutComboBox.SelectedIndex = index;
+                    }
+
+                    if (!string.IsNullOrEmpty(settings.PrintQuality))
+                    {
+                        int index = printQualityComboBox.Items.IndexOf(settings.PrintQuality);
+                        if (index >= 0) printQualityComboBox.SelectedIndex = index;
+                    }
+
+                    if (!string.IsNullOrEmpty(settings.Orientation))
+                    {
+                        int index = orientationComboBox.Items.IndexOf(settings.Orientation);
+                        if (index >= 0) orientationComboBox.SelectedIndex = index;
+                    }
+
+                    borderlessCheckBox.Checked = settings.Borderless;
+
+                    if (!string.IsNullOrEmpty(settings.PrinterPreset))
+                        printerPresetTextBox.Text = settings.PrinterPreset;
+
+                    if (!string.IsNullOrEmpty(settings.TopMargin))
+                        topMarginTextBox.Text = settings.TopMargin;
+
+                    if (!string.IsNullOrEmpty(settings.BottomMargin))
+                        bottomMarginTextBox.Text = settings.BottomMargin;
+
+                    if (!string.IsNullOrEmpty(settings.LeftMargin))
+                        leftMarginTextBox.Text = settings.LeftMargin;
+
+                    if (!string.IsNullOrEmpty(settings.RightMargin))
+                        rightMarginTextBox.Text = settings.RightMargin;
+
+                    MessageBox.Show("Settings loaded successfully!", "Load Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading settings: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 
@@ -553,25 +702,26 @@ public partial class Form1 : Form
             }
         }
 
-        // Set margins for borderless printing
-        if (borderlessCheckBox.Checked)
-        {
-            printDoc.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
+        // Set margins using custom margin values
+        int topMargin = 0, bottomMargin = 0, leftMargin = 0, rightMargin = 0;
 
-            // Force the printer to use the full page bounds by setting OriginAtMargins to false
-            // This tells the printer to use absolute coordinates from (0,0)
-            printDoc.OriginAtMargins = false;
+        // Parse custom margin values
+        if (int.TryParse(topMarginTextBox.Text, out int parsedTop))
+            topMargin = parsedTop;
+        if (int.TryParse(bottomMarginTextBox.Text, out int parsedBottom))
+            bottomMargin = parsedBottom;
+        if (int.TryParse(leftMarginTextBox.Text, out int parsedLeft))
+            leftMargin = parsedLeft;
+        if (int.TryParse(rightMarginTextBox.Text, out int parsedRight))
+            rightMargin = parsedRight;
 
-            // NOTE: True borderless printing requires printer driver settings.
-            // For Epson ET-8550, you may need to configure borderless mode in the printer preferences.
-            // This application sets margins to 0, but the printer may still apply physical margins.
-        }
-        else
-        {
-            // Use minimal margins but still use OriginAtMargins=false to maximize print area
-            printDoc.DefaultPageSettings.Margins = new Margins(15, 15, 15, 15);
-            printDoc.OriginAtMargins = false;
-        }
+        // Apply custom margins
+        printDoc.DefaultPageSettings.Margins = new Margins(leftMargin, rightMargin, topMargin, bottomMargin);
+
+        // Always use OriginAtMargins=false for full control
+        printDoc.OriginAtMargins = false;
+
+        System.Diagnostics.Debug.WriteLine($"Custom Margins - Top: {topMargin}, Bottom: {bottomMargin}, Left: {leftMargin}, Right: {rightMargin}");
 
         printDoc.Print();
     }
@@ -588,42 +738,43 @@ public partial class Form1 : Form
         System.Diagnostics.Debug.WriteLine($"Image Size: {imageToPrint.Width}x{imageToPrint.Height}");
         System.Diagnostics.Debug.WriteLine($"Borderless: {borderlessCheckBox.Checked}");
 
+        // Get custom margins from text boxes
+        int topMargin = 0, bottomMargin = 0, leftMargin = 0, rightMargin = 0;
+        if (int.TryParse(topMarginTextBox.Text, out int parsedTop))
+            topMargin = parsedTop;
+        if (int.TryParse(bottomMarginTextBox.Text, out int parsedBottom))
+            bottomMargin = parsedBottom;
+        if (int.TryParse(leftMarginTextBox.Text, out int parsedLeft))
+            leftMargin = parsedLeft;
+        if (int.TryParse(rightMarginTextBox.Text, out int parsedRight))
+            rightMargin = parsedRight;
+
         Rectangle bounds;
         int layoutIndex = layoutComboBox.SelectedIndex;
 
         switch (layoutIndex)
         {
             case 0: // Full Page Photo (No Cropping)
-                // Always use PageBounds for full page photos to maximize print area
+                // Use PageBounds and apply custom margins
                 bounds = e.PageBounds;
-
-                // For non-borderless, apply small margin manually
-                if (!borderlessCheckBox.Checked)
-                {
-                    int margin = 15; // Small margin in hundredths of inch
-                    bounds = new Rectangle(
-                        bounds.Left + margin,
-                        bounds.Top + margin,
-                        bounds.Width - (margin * 2),
-                        bounds.Height - (margin * 2)
-                    );
-                }
+                bounds = new Rectangle(
+                    bounds.Left + leftMargin,
+                    bounds.Top + topMargin,
+                    bounds.Width - (leftMargin + rightMargin),
+                    bounds.Height - (topMargin + bottomMargin)
+                );
                 DrawFitToPage(e.Graphics, bounds);
                 break;
 
             case 1: // Fill Page (Crop to Fit)
+                // Use PageBounds and apply custom margins
                 bounds = e.PageBounds;
-
-                if (!borderlessCheckBox.Checked)
-                {
-                    int margin = 15;
-                    bounds = new Rectangle(
-                        bounds.Left + margin,
-                        bounds.Top + margin,
-                        bounds.Width - (margin * 2),
-                        bounds.Height - (margin * 2)
-                    );
-                }
+                bounds = new Rectangle(
+                    bounds.Left + leftMargin,
+                    bounds.Top + topMargin,
+                    bounds.Width - (leftMargin + rightMargin),
+                    bounds.Height - (topMargin + bottomMargin)
+                );
                 DrawFullPage(e.Graphics, bounds);
                 break;
 

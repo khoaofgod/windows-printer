@@ -29,6 +29,10 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
+        menuStrip1 = new MenuStrip();
+        settingsToolStripMenuItem = new ToolStripMenuItem();
+        loadSettingsToolStripMenuItem = new ToolStripMenuItem();
+        saveSettingsToolStripMenuItem = new ToolStripMenuItem();
         printerCheckedListBox = new CheckedListBox();
         paperSizeComboBox = new ComboBox();
         paperSourceComboBox = new ComboBox();
@@ -38,6 +42,15 @@ partial class Form1
         customHeightTextBox = new TextBox();
         borderlessCheckBox = new CheckBox();
         orientationComboBox = new ComboBox();
+        customMarginsGroupBox = new GroupBox();
+        topMarginTextBox = new TextBox();
+        bottomMarginTextBox = new TextBox();
+        leftMarginTextBox = new TextBox();
+        rightMarginTextBox = new TextBox();
+        topMarginLabel = new Label();
+        bottomMarginLabel = new Label();
+        leftMarginLabel = new Label();
+        rightMarginLabel = new Label();
         printerPresetTextBox = new TextBox();
         printerPresetLabel = new Label();
         configurePresetButton = new Button();
@@ -61,13 +74,46 @@ partial class Form1
         printQualityComboBox = new ComboBox();
         label11 = new Label();
         ((System.ComponentModel.ISupportInitialize)previewPictureBox).BeginInit();
+        menuStrip1.SuspendLayout();
+        customMarginsGroupBox.SuspendLayout();
         SuspendLayout();
+        //
+        // menuStrip1
+        //
+        menuStrip1.ImageScalingSize = new Size(20, 20);
+        menuStrip1.Items.AddRange(new ToolStripItem[] { settingsToolStripMenuItem });
+        menuStrip1.Location = new Point(0, 0);
+        menuStrip1.Name = "menuStrip1";
+        menuStrip1.Size = new Size(880, 28);
+        menuStrip1.TabIndex = 31;
+        menuStrip1.Text = "menuStrip1";
+        //
+        // settingsToolStripMenuItem
+        //
+        settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { loadSettingsToolStripMenuItem, saveSettingsToolStripMenuItem });
+        settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+        settingsToolStripMenuItem.Size = new Size(76, 24);
+        settingsToolStripMenuItem.Text = "Settings";
+        //
+        // loadSettingsToolStripMenuItem
+        //
+        loadSettingsToolStripMenuItem.Name = "loadSettingsToolStripMenuItem";
+        loadSettingsToolStripMenuItem.Size = new Size(188, 26);
+        loadSettingsToolStripMenuItem.Text = "Load Settings...";
+        loadSettingsToolStripMenuItem.Click += LoadSettingsToolStripMenuItem_Click;
+        //
+        // saveSettingsToolStripMenuItem
+        //
+        saveSettingsToolStripMenuItem.Name = "saveSettingsToolStripMenuItem";
+        saveSettingsToolStripMenuItem.Size = new Size(188, 26);
+        saveSettingsToolStripMenuItem.Text = "Save Settings...";
+        saveSettingsToolStripMenuItem.Click += SaveSettingsToolStripMenuItem_Click;
         //
         // printerCheckedListBox
         //
         printerCheckedListBox.CheckOnClick = true;
         printerCheckedListBox.FormattingEnabled = true;
-        printerCheckedListBox.Location = new Point(120, 20);
+        printerCheckedListBox.Location = new Point(120, 60);
         printerCheckedListBox.Name = "printerCheckedListBox";
         printerCheckedListBox.Size = new Size(300, 150);
         printerCheckedListBox.TabIndex = 0;
@@ -147,12 +193,101 @@ partial class Form1
         orientationComboBox.Size = new Size(145, 28);
         orientationComboBox.TabIndex = 27;
         //
+        // customMarginsGroupBox
+        //
+        customMarginsGroupBox.Controls.Add(rightMarginLabel);
+        customMarginsGroupBox.Controls.Add(leftMarginLabel);
+        customMarginsGroupBox.Controls.Add(bottomMarginLabel);
+        customMarginsGroupBox.Controls.Add(topMarginLabel);
+        customMarginsGroupBox.Controls.Add(rightMarginTextBox);
+        customMarginsGroupBox.Controls.Add(leftMarginTextBox);
+        customMarginsGroupBox.Controls.Add(bottomMarginTextBox);
+        customMarginsGroupBox.Controls.Add(topMarginTextBox);
+        customMarginsGroupBox.Location = new Point(450, 450);
+        customMarginsGroupBox.Name = "customMarginsGroupBox";
+        customMarginsGroupBox.Size = new Size(400, 90);
+        customMarginsGroupBox.TabIndex = 32;
+        customMarginsGroupBox.TabStop = false;
+        customMarginsGroupBox.Text = "Custom Margins (hundredths of inch)";
+        //
+        // topMarginTextBox
+        //
+        topMarginTextBox.Location = new Point(50, 25);
+        topMarginTextBox.Name = "topMarginTextBox";
+        topMarginTextBox.PlaceholderText = "0";
+        topMarginTextBox.Size = new Size(60, 27);
+        topMarginTextBox.TabIndex = 0;
+        topMarginTextBox.Text = "0";
+        //
+        // bottomMarginTextBox
+        //
+        bottomMarginTextBox.Location = new Point(50, 55);
+        bottomMarginTextBox.Name = "bottomMarginTextBox";
+        bottomMarginTextBox.PlaceholderText = "0";
+        bottomMarginTextBox.Size = new Size(60, 27);
+        bottomMarginTextBox.TabIndex = 1;
+        bottomMarginTextBox.Text = "0";
+        //
+        // leftMarginTextBox
+        //
+        leftMarginTextBox.Location = new Point(160, 25);
+        leftMarginTextBox.Name = "leftMarginTextBox";
+        leftMarginTextBox.PlaceholderText = "0";
+        leftMarginTextBox.Size = new Size(60, 27);
+        leftMarginTextBox.TabIndex = 2;
+        leftMarginTextBox.Text = "0";
+        //
+        // rightMarginTextBox
+        //
+        rightMarginTextBox.Location = new Point(160, 55);
+        rightMarginTextBox.Name = "rightMarginTextBox";
+        rightMarginTextBox.PlaceholderText = "0";
+        rightMarginTextBox.Size = new Size(60, 27);
+        rightMarginTextBox.TabIndex = 3;
+        rightMarginTextBox.Text = "0";
+        //
+        // topMarginLabel
+        //
+        topMarginLabel.AutoSize = true;
+        topMarginLabel.Location = new Point(10, 28);
+        topMarginLabel.Name = "topMarginLabel";
+        topMarginLabel.Size = new Size(35, 20);
+        topMarginLabel.TabIndex = 4;
+        topMarginLabel.Text = "Top:";
+        //
+        // bottomMarginLabel
+        //
+        bottomMarginLabel.AutoSize = true;
+        bottomMarginLabel.Location = new Point(10, 58);
+        bottomMarginLabel.Name = "bottomMarginLabel";
+        bottomMarginLabel.Size = new Size(38, 20);
+        bottomMarginLabel.TabIndex = 5;
+        bottomMarginLabel.Text = "Btm:";
+        //
+        // leftMarginLabel
+        //
+        leftMarginLabel.AutoSize = true;
+        leftMarginLabel.Location = new Point(125, 28);
+        leftMarginLabel.Name = "leftMarginLabel";
+        leftMarginLabel.Size = new Size(36, 20);
+        leftMarginLabel.TabIndex = 6;
+        leftMarginLabel.Text = "Left:";
+        //
+        // rightMarginLabel
+        //
+        rightMarginLabel.AutoSize = true;
+        rightMarginLabel.Location = new Point(125, 58);
+        rightMarginLabel.Name = "rightMarginLabel";
+        rightMarginLabel.Size = new Size(28, 20);
+        rightMarginLabel.TabIndex = 7;
+        rightMarginLabel.Text = "Rt:";
+        //
         // printerPresetTextBox
         //
         printerPresetTextBox.Location = new Point(120, 465);
         printerPresetTextBox.Name = "printerPresetTextBox";
         printerPresetTextBox.PlaceholderText = "Leave empty to use settings above";
-        printerPresetTextBox.Size = new Size(300, 27);
+        printerPresetTextBox.Size = new Size(150, 27);
         printerPresetTextBox.TabIndex = 28;
         //
         // printerPresetLabel
@@ -166,7 +301,7 @@ partial class Form1
         //
         // configurePresetButton
         //
-        configurePresetButton.Location = new Point(430, 463);
+        configurePresetButton.Location = new Point(280, 463);
         configurePresetButton.Name = "configurePresetButton";
         configurePresetButton.Size = new Size(90, 30);
         configurePresetButton.TabIndex = 30;
@@ -208,7 +343,7 @@ partial class Form1
         // label1
         //
         label1.AutoSize = true;
-        label1.Location = new Point(20, 23);
+        label1.Location = new Point(20, 43);
         label1.Name = "label1";
         label1.Size = new Size(65, 20);
         label1.TabIndex = 11;
@@ -359,6 +494,8 @@ partial class Form1
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(880, 740);
         Controls.Add(label11);
+        Controls.Add(menuStrip1);
+        MainMenuStrip = menuStrip1;
         Controls.Add(printQualityComboBox);
         Controls.Add(label10);
         Controls.Add(label9);
@@ -377,6 +514,7 @@ partial class Form1
         Controls.Add(previewPictureBox);
         Controls.Add(printButton);
         Controls.Add(selectPhotoButton);
+        Controls.Add(customMarginsGroupBox);
         Controls.Add(configurePresetButton);
         Controls.Add(printerPresetLabel);
         Controls.Add(printerPresetTextBox);
@@ -393,12 +531,20 @@ partial class Form1
         Text = "Photo Printer";
         Load += Form1_Load;
         ((System.ComponentModel.ISupportInitialize)previewPictureBox).EndInit();
+        menuStrip1.ResumeLayout(false);
+        menuStrip1.PerformLayout();
+        customMarginsGroupBox.ResumeLayout(false);
+        customMarginsGroupBox.PerformLayout();
         ResumeLayout(false);
         PerformLayout();
     }
 
     #endregion
 
+    private MenuStrip menuStrip1;
+    private ToolStripMenuItem settingsToolStripMenuItem;
+    private ToolStripMenuItem loadSettingsToolStripMenuItem;
+    private ToolStripMenuItem saveSettingsToolStripMenuItem;
     private CheckedListBox printerCheckedListBox;
     private ComboBox paperSizeComboBox;
     private ComboBox paperSourceComboBox;
@@ -408,6 +554,15 @@ partial class Form1
     private TextBox customHeightTextBox;
     private CheckBox borderlessCheckBox;
     private ComboBox orientationComboBox;
+    private GroupBox customMarginsGroupBox;
+    private TextBox topMarginTextBox;
+    private TextBox bottomMarginTextBox;
+    private TextBox leftMarginTextBox;
+    private TextBox rightMarginTextBox;
+    private Label topMarginLabel;
+    private Label bottomMarginLabel;
+    private Label leftMarginLabel;
+    private Label rightMarginLabel;
     private TextBox printerPresetTextBox;
     private Label printerPresetLabel;
     private Button configurePresetButton;
