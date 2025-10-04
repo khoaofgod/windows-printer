@@ -37,6 +37,7 @@ partial class Form1
         customWidthTextBox = new TextBox();
         customHeightTextBox = new TextBox();
         borderlessCheckBox = new CheckBox();
+        orientationComboBox = new ComboBox();
         selectPhotoButton = new Button();
         printButton = new Button();
         previewPictureBox = new PictureBox();
@@ -133,6 +134,15 @@ partial class Form1
         borderlessCheckBox.TabIndex = 7;
         borderlessCheckBox.Text = "Borderless Printing";
         borderlessCheckBox.UseVisualStyleBackColor = true;
+        //
+        // orientationComboBox
+        //
+        orientationComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        orientationComboBox.FormattingEnabled = true;
+        orientationComboBox.Location = new Point(275, 425);
+        orientationComboBox.Name = "orientationComboBox";
+        orientationComboBox.Size = new Size(145, 28);
+        orientationComboBox.TabIndex = 27;
         //
         // selectPhotoButton
         //
@@ -337,6 +347,7 @@ partial class Form1
         Controls.Add(previewPictureBox);
         Controls.Add(printButton);
         Controls.Add(selectPhotoButton);
+        Controls.Add(orientationComboBox);
         Controls.Add(borderlessCheckBox);
         Controls.Add(customHeightTextBox);
         Controls.Add(customWidthTextBox);
@@ -363,6 +374,7 @@ partial class Form1
     private TextBox customWidthTextBox;
     private TextBox customHeightTextBox;
     private CheckBox borderlessCheckBox;
+    private ComboBox orientationComboBox;
     private Button selectPhotoButton;
     private Button printButton;
     private PictureBox previewPictureBox;

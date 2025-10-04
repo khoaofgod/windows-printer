@@ -37,6 +37,7 @@ public partial class Form1 : Form
         LoadPaperTypes();
         LoadLayouts();
         LoadPrintQuality();
+        LoadOrientation();
         InitializeAutoPrint();
     }
 
@@ -62,6 +63,30 @@ public partial class Form1 : Form
         }
     }
 
+    private void DebugPrinterSizes()
+    {
+        // Get the first checked printer
+        if (printerCheckedListBox.CheckedItems.Count == 0)
+        {
+            MessageBox.Show("Please select a printer first.", "No Printer Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        string printerName = printerCheckedListBox.CheckedItems[0]?.ToString()!;
+        PrinterSettings ps = new PrinterSettings();
+        ps.PrinterName = printerName;
+
+        string sizes = $"Available paper sizes for {printerName}:\n\n";
+        foreach (PaperSize size in ps.PaperSizes)
+        {
+            float widthInches = size.Width / 100.0f;
+            float heightInches = size.Height / 100.0f;
+            sizes += $"{size.PaperName}: {widthInches:F2} x {heightInches:F2} in\n";
+        }
+
+        MessageBox.Show(sizes, "Printer Paper Sizes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
     private void PrinterCheckedListBox_ItemCheck(object? sender, ItemCheckEventArgs e)
     {
         // Reset round-robin counter when printer selection changes
@@ -77,6 +102,8 @@ public partial class Form1 : Form
         var commonSizes = new[]
         {
             "Letter (8.5 x 11 in)",
+            "2.5 x 7 in",
+            "3.5 x 5 in",
             "4 x 6 in",
             "5 x 7 in",
             "8 x 10 in",
@@ -185,8 +212,8 @@ public partial class Form1 : Form
 
         var layouts = new[]
         {
-            "Full Page Photo",
-            "Fit to Page",
+            "Full Page Photo (No Cropping)",
+            "Fill Page (Crop to Fit)",
             "Actual Size (No Scaling)",
             "Document (With Margins)"
         };
@@ -198,7 +225,7 @@ public partial class Form1 : Form
 
         if (layoutComboBox.Items.Count > 0)
         {
-            layoutComboBox.SelectedIndex = 0; // Default to "Full Page Photo"
+            layoutComboBox.SelectedIndex = 0; // Default to "Full Page Photo (No Cropping)"
         }
     }
 
@@ -214,6 +241,18 @@ public partial class Form1 : Form
 
         // Default to High quality
         printQualityComboBox.SelectedIndex = 3;
+    }
+
+    private void LoadOrientation()
+    {
+        orientationComboBox.Items.Clear();
+
+        orientationComboBox.Items.Add("Auto (Match Image)");
+        orientationComboBox.Items.Add("Portrait");
+        orientationComboBox.Items.Add("Landscape");
+
+        // Default to Auto
+        orientationComboBox.SelectedIndex = 0;
     }
 
     private void PaperSizeComboBox_SelectedIndexChanged(object? sender, EventArgs e)
@@ -300,14 +339,109 @@ public partial class Form1 : Form
         printDoc.PrinterSettings.PrinterName = printerName;
         printDoc.PrintPage += PrintDocument_PrintPage;
 
-        // Handle custom paper size
-        if (paperSizeComboBox.SelectedIndex == 0)
+        // Set orientation
+        int orientationIndex = orientationComboBox.SelectedIndex;
+
+        if (orientationIndex == 0) // Auto - match image aspect ratio
         {
-            if (float.TryParse(customWidthTextBox.Text, out float width) &&
-                float.TryParse(customHeightTextBox.Text, out float height))
+            if (imageToPrint != null)
             {
-                PaperSize customSize = new PaperSize("Custom", (int)(width * 100), (int)(height * 100));
-                printDoc.DefaultPageSettings.PaperSize = customSize;
+                // If image is wider than tall, use landscape
+                bool imageIsWide = imageToPrint.Width > imageToPrint.Height;
+                printDoc.DefaultPageSettings.Landscape = imageIsWide;
+                System.Diagnostics.Debug.WriteLine($"Auto orientation: {(imageIsWide ? "Landscape" : "Portrait")} (image {imageToPrint.Width}x{imageToPrint.Height})");
+            }
+        }
+        else if (orientationIndex == 2) // Landscape
+        {
+            printDoc.DefaultPageSettings.Landscape = true;
+        }
+        // orientationIndex == 1 is Portrait (default, no need to set)
+
+        // Handle paper size
+        if (paperSizeComboBox.SelectedItem != null)
+        {
+            string selectedSize = paperSizeComboBox.SelectedItem.ToString()!;
+
+            float width = 0, height = 0;
+
+            if (selectedSize == "Custom Size")
+            {
+                // Use custom dimensions from text boxes
+                if (float.TryParse(customWidthTextBox.Text, out width) &&
+                    float.TryParse(customHeightTextBox.Text, out height))
+                {
+                    // Custom size will be set below
+                }
+            }
+            else
+            {
+                // Parse predefined sizes
+                if (selectedSize.StartsWith("Letter"))
+                {
+                    width = 8.5f; height = 11f;
+                }
+                else if (selectedSize.StartsWith("2.5 x 7"))
+                {
+                    width = 2.5f; height = 7f;
+                }
+                else if (selectedSize.StartsWith("3.5 x 5"))
+                {
+                    width = 3.5f; height = 5f;
+                }
+                else if (selectedSize.StartsWith("4 x 6"))
+                {
+                    width = 4f; height = 6f;
+                }
+                else if (selectedSize.StartsWith("5 x 7"))
+                {
+                    width = 5f; height = 7f;
+                }
+                else if (selectedSize.StartsWith("8 x 10"))
+                {
+                    width = 8f; height = 10f;
+                }
+                else if (selectedSize.StartsWith("13 x 19"))
+                {
+                    width = 13f; height = 19f;
+                }
+                else if (selectedSize.StartsWith("A4"))
+                {
+                    width = 8.27f; height = 11.69f; // A4 in inches
+                }
+            }
+
+            if (width > 0 && height > 0)
+            {
+                // Try to find a matching paper size from the printer first
+                PaperSize? matchingSize = null;
+                foreach (PaperSize ps in printDoc.PrinterSettings.PaperSizes)
+                {
+                    // Convert to inches for comparison (PaperSize is in hundredths of inch)
+                    float psWidth = ps.Width / 100.0f;
+                    float psHeight = ps.Height / 100.0f;
+
+                    // Check for exact match (within 0.1 inch tolerance)
+                    if (Math.Abs(psWidth - width) < 0.1f && Math.Abs(psHeight - height) < 0.1f)
+                    {
+                        matchingSize = ps;
+                        System.Diagnostics.Debug.WriteLine($"Found matching printer paper size: {ps.PaperName} ({ps.Width}x{ps.Height})");
+                        break;
+                    }
+                }
+
+                if (matchingSize != null)
+                {
+                    // Use the printer's native paper size
+                    printDoc.DefaultPageSettings.PaperSize = matchingSize;
+                }
+                else
+                {
+                    // Create custom paper size
+                    PaperSize customSize = new PaperSize(selectedSize, (int)(width * 100), (int)(height * 100));
+                    printDoc.DefaultPageSettings.PaperSize = customSize;
+                    System.Diagnostics.Debug.WriteLine($"Using custom paper size: {width}x{height} inches");
+                }
             }
         }
 
@@ -355,10 +489,20 @@ public partial class Form1 : Form
         if (borderlessCheckBox.Checked)
         {
             printDoc.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
+
+            // Force the printer to use the full page bounds by setting OriginAtMargins to false
+            // This tells the printer to use absolute coordinates from (0,0)
+            printDoc.OriginAtMargins = false;
+
+            // NOTE: True borderless printing requires printer driver settings.
+            // For Epson ET-8550, you may need to configure borderless mode in the printer preferences.
+            // This application sets margins to 0, but the printer may still apply physical margins.
         }
         else
         {
-            printDoc.DefaultPageSettings.Margins = new Margins(25, 25, 25, 25);
+            // Use minimal margins but still use OriginAtMargins=false to maximize print area
+            printDoc.DefaultPageSettings.Margins = new Margins(15, 15, 15, 15);
+            printDoc.OriginAtMargins = false;
         }
 
         printDoc.Print();
@@ -369,23 +513,50 @@ public partial class Form1 : Form
         if (imageToPrint == null || e.Graphics == null)
             return;
 
+        // Debug logging
+        System.Diagnostics.Debug.WriteLine($"PageBounds: {e.PageBounds.Width}x{e.PageBounds.Height}");
+        System.Diagnostics.Debug.WriteLine($"MarginBounds: {e.MarginBounds.Width}x{e.MarginBounds.Height}");
+        System.Diagnostics.Debug.WriteLine($"PageSettings.PaperSize: {e.PageSettings.PaperSize.Width}x{e.PageSettings.PaperSize.Height}");
+        System.Diagnostics.Debug.WriteLine($"Image Size: {imageToPrint.Width}x{imageToPrint.Height}");
+        System.Diagnostics.Debug.WriteLine($"Borderless: {borderlessCheckBox.Checked}");
+
         Rectangle bounds;
         int layoutIndex = layoutComboBox.SelectedIndex;
 
         switch (layoutIndex)
         {
-            case 0: // Full Page Photo
+            case 0: // Full Page Photo (No Cropping)
+                // Always use PageBounds for full page photos to maximize print area
                 bounds = e.PageBounds;
+
+                // For non-borderless, apply small margin manually
                 if (!borderlessCheckBox.Checked)
                 {
-                    bounds = e.MarginBounds;
+                    int margin = 15; // Small margin in hundredths of inch
+                    bounds = new Rectangle(
+                        bounds.Left + margin,
+                        bounds.Top + margin,
+                        bounds.Width - (margin * 2),
+                        bounds.Height - (margin * 2)
+                    );
                 }
-                DrawFullPage(e.Graphics, bounds);
+                DrawFitToPage(e.Graphics, bounds);
                 break;
 
-            case 1: // Fit to Page
-                bounds = e.MarginBounds;
-                DrawFitToPage(e.Graphics, bounds);
+            case 1: // Fill Page (Crop to Fit)
+                bounds = e.PageBounds;
+
+                if (!borderlessCheckBox.Checked)
+                {
+                    int margin = 15;
+                    bounds = new Rectangle(
+                        bounds.Left + margin,
+                        bounds.Top + margin,
+                        bounds.Width - (margin * 2),
+                        bounds.Height - (margin * 2)
+                    );
+                }
+                DrawFullPage(e.Graphics, bounds);
                 break;
 
             case 2: // Actual Size (No Scaling)
@@ -400,7 +571,7 @@ public partial class Form1 : Form
 
             default:
                 bounds = e.PageBounds;
-                DrawFullPage(e.Graphics, bounds);
+                DrawFitToPage(e.Graphics, bounds);
                 break;
         }
 
