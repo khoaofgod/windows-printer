@@ -370,7 +370,7 @@ partial class Form1
         // label4
         //
         label4.AutoSize = true;
-        label4.Location = new Point(120, 480);
+        label4.Location = new Point(450, 550);
         label4.Name = "label4";
         label4.Size = new Size(0, 20);
         label4.TabIndex = 14;

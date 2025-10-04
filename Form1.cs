@@ -531,6 +531,9 @@ public partial class Form1 : Form
         // Check if using saved printer preset/settings
         bool usePreset = !string.IsNullOrWhiteSpace(printerPresetTextBox.Text) && savedPresetPrinterSettings != null;
 
+        // Get orientation setting (used in both preset and manual modes)
+        int orientationIndex = orientationComboBox.SelectedIndex;
+
         if (usePreset)
         {
             // Use the saved preset settings configured via "Configure..." button
@@ -549,6 +552,50 @@ public partial class Form1 : Form
                 printDoc.DefaultPageSettings = savedPresetPageSettings;
             }
 
+            // Apply Orientation if specified
+            if (orientationIndex == 0) // Auto - calculate based on image dimensions
+            {
+                if (imageToPrint != null)
+                {
+                    // If image width > height, use landscape
+                    bool imageIsWide = imageToPrint.Width > imageToPrint.Height;
+                    printDoc.DefaultPageSettings.Landscape = imageIsWide;
+                    System.Diagnostics.Debug.WriteLine($"Auto orientation with preset: {(imageIsWide ? "Landscape" : "Portrait")} (image {imageToPrint.Width}x{imageToPrint.Height})");
+                }
+            }
+            else if (orientationIndex == 1) // Portrait
+            {
+                printDoc.DefaultPageSettings.Landscape = false;
+            }
+            else if (orientationIndex == 2) // Landscape
+            {
+                printDoc.DefaultPageSettings.Landscape = true;
+            }
+
+            // Apply Print Quality if specified
+            if (printQualityComboBox.SelectedItem != null)
+            {
+                string quality = printQualityComboBox.SelectedItem.ToString()!;
+                PrinterResolutionKind resolutionKind = quality switch
+                {
+                    "Draft" => PrinterResolutionKind.Draft,
+                    "Low" => PrinterResolutionKind.Low,
+                    "Medium" => PrinterResolutionKind.Medium,
+                    "High" => PrinterResolutionKind.High,
+                    _ => PrinterResolutionKind.High
+                };
+
+                // Find and set matching printer resolution
+                foreach (PrinterResolution resolution in printDoc.PrinterSettings.PrinterResolutions)
+                {
+                    if (resolution.Kind == resolutionKind)
+                    {
+                        printDoc.DefaultPageSettings.PrinterResolution = resolution;
+                        break;
+                    }
+                }
+            }
+
             // Print directly with preset settings - skip all custom configuration below
             printDoc.Print();
             return;
@@ -556,9 +603,7 @@ public partial class Form1 : Form
 
         // === Manual Settings Mode (only used when NO preset is configured) ===
 
-        // Set orientation
-        int orientationIndex = orientationComboBox.SelectedIndex;
-
+        // Set orientation (orientationIndex already declared above)
         if (orientationIndex == 0) // Auto - match image aspect ratio
         {
             if (imageToPrint != null)
