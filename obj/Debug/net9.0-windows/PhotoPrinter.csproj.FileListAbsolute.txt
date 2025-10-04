@@ -1,0 +1,14 @@
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\PhotoPrinter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\PhotoPrinter.AssemblyInfoInputs.cache
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\PhotoPrinter.AssemblyInfo.cs
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\PhotoPrinter.csproj.CoreCompileInputs.cache
+C:\Users\admin\projects\printer\PhotoPrinter\bin\Debug\net9.0-windows\PhotoPrinter.exe
+C:\Users\admin\projects\printer\PhotoPrinter\bin\Debug\net9.0-windows\PhotoPrinter.deps.json
+C:\Users\admin\projects\printer\PhotoPrinter\bin\Debug\net9.0-windows\PhotoPrinter.runtimeconfig.json
+C:\Users\admin\projects\printer\PhotoPrinter\bin\Debug\net9.0-windows\PhotoPrinter.dll
+C:\Users\admin\projects\printer\PhotoPrinter\bin\Debug\net9.0-windows\PhotoPrinter.pdb
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\PhotoPrinter.dll
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\refint\PhotoPrinter.dll
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\PhotoPrinter.pdb
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\PhotoPrinter.genruntimeconfig.cache
+C:\Users\admin\projects\printer\PhotoPrinter\obj\Debug\net9.0-windows\ref\PhotoPrinter.dll
