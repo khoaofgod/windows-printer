@@ -1,6 +1,7 @@
 using System.Drawing.Printing;
 using System.Text.Json;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace PhotoPrinter;
 
@@ -33,6 +34,7 @@ public partial class Form1 : Form
     private string? selectedImagePath;
     private Image? imageToPrint;
     private int currentPrinterIndex = 0;
+    private string? currentPrintFilePath = null;
 
     // Auto-print fields
     private CancellationTokenSource? autoPrintCancellation;
@@ -509,6 +511,9 @@ public partial class Form1 : Form
             string nextPrinter = checkedPrinters[currentPrinterIndex % checkedPrinters.Count];
             currentPrinterIndex++;
 
+            // Set current file path for rundll32 printing
+            currentPrintFilePath = selectedImagePath;
+
             PrintToSpecificPrinter(nextPrinter);
 
             label4.Text = $"Printed to: {nextPrinter}";
@@ -524,6 +529,45 @@ public partial class Form1 : Form
 
     private void PrintToSpecificPrinter(string printerName)
     {
+        // Check if using Windows printer settings (rundll32 approach)
+        if (usePrinterSettingsCheckBox.Checked)
+        {
+            if (string.IsNullOrEmpty(currentPrintFilePath) || !File.Exists(currentPrintFilePath))
+            {
+                AddLog($"Error: File path not available for rundll32 printing");
+                return;
+            }
+
+            try
+            {
+                // Use Windows built-in print function with printer's saved settings
+                // This ignores all custom settings and uses Windows profile settings
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = "rundll32.exe",
+                    Arguments = $"shimgvw.dll,ImageView_PrintTo /pt \"{currentPrintFilePath}\" \"{printerName}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using (Process? process = Process.Start(startInfo))
+                {
+                    process?.WaitForExit();
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Printed via rundll32: {currentPrintFilePath} to {printerName}");
+                AddLog($"Printed via rundll32: {Path.GetFileName(currentPrintFilePath)} to {printerName}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error printing via rundll32: {ex.Message}");
+                AddLog($"Error printing via rundll32: {ex.Message}");
+            }
+
+            return;
+        }
+
+        // Original PrintDocument approach
         using PrintDocument printDoc = new PrintDocument();
         printDoc.PrinterSettings.PrinterName = printerName;
         printDoc.PrintPage += PrintDocument_PrintPage;
@@ -1170,6 +1214,9 @@ public partial class Form1 : Form
             currentPrinterIndex++;
 
             AddLog($"Printing {file.file_name} to {nextPrinter}...");
+
+            // Set current file path for rundll32 printing
+            currentPrintFilePath = readyPath;
 
             // Load and print the image
             using (var printImage = Image.FromFile(readyPath))

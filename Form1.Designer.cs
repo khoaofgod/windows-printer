@@ -73,6 +73,7 @@ partial class Form1
         label10 = new Label();
         printQualityComboBox = new ComboBox();
         label11 = new Label();
+        usePrinterSettingsCheckBox = new CheckBox();
         ((System.ComponentModel.ISupportInitialize)previewPictureBox).BeginInit();
         menuStrip1.SuspendLayout();
         customMarginsGroupBox.SuspendLayout();
@@ -282,9 +283,19 @@ partial class Form1
         rightMarginLabel.TabIndex = 7;
         rightMarginLabel.Text = "Rt:";
         //
+        // usePrinterSettingsCheckBox
+        //
+        usePrinterSettingsCheckBox.AutoSize = true;
+        usePrinterSettingsCheckBox.Location = new Point(120, 455);
+        usePrinterSettingsCheckBox.Name = "usePrinterSettingsCheckBox";
+        usePrinterSettingsCheckBox.Size = new Size(200, 24);
+        usePrinterSettingsCheckBox.TabIndex = 33;
+        usePrinterSettingsCheckBox.Text = "Print with Printer Setting";
+        usePrinterSettingsCheckBox.UseVisualStyleBackColor = true;
+        //
         // printerPresetTextBox
         //
-        printerPresetTextBox.Location = new Point(120, 465);
+        printerPresetTextBox.Location = new Point(120, 495);
         printerPresetTextBox.Name = "printerPresetTextBox";
         printerPresetTextBox.PlaceholderText = "Leave empty to use settings above";
         printerPresetTextBox.Size = new Size(150, 27);
@@ -293,7 +304,7 @@ partial class Form1
         // printerPresetLabel
         //
         printerPresetLabel.AutoSize = true;
-        printerPresetLabel.Location = new Point(20, 468);
+        printerPresetLabel.Location = new Point(20, 498);
         printerPresetLabel.Name = "printerPresetLabel";
         printerPresetLabel.Size = new Size(92, 20);
         printerPresetLabel.TabIndex = 29;
@@ -301,7 +312,7 @@ partial class Form1
         //
         // configurePresetButton
         //
-        configurePresetButton.Location = new Point(280, 463);
+        configurePresetButton.Location = new Point(280, 493);
         configurePresetButton.Name = "configurePresetButton";
         configurePresetButton.Size = new Size(90, 30);
         configurePresetButton.TabIndex = 30;
@@ -311,7 +322,7 @@ partial class Form1
         //
         // selectPhotoButton
         //
-        selectPhotoButton.Location = new Point(120, 505);
+        selectPhotoButton.Location = new Point(120, 535);
         selectPhotoButton.Name = "selectPhotoButton";
         selectPhotoButton.Size = new Size(150, 35);
         selectPhotoButton.TabIndex = 8;
@@ -322,7 +333,7 @@ partial class Form1
         // printButton
         //
         printButton.Enabled = false;
-        printButton.Location = new Point(290, 505);
+        printButton.Location = new Point(290, 535);
         printButton.Name = "printButton";
         printButton.Size = new Size(130, 35);
         printButton.TabIndex = 9;
@@ -432,7 +443,7 @@ partial class Form1
         //
         logTextBox.BackColor = SystemColors.Window;
         logTextBox.Font = new Font("Consolas", 9F);
-        logTextBox.Location = new Point(20, 560);
+        logTextBox.Location = new Point(20, 590);
         logTextBox.Multiline = true;
         logTextBox.Name = "logTextBox";
         logTextBox.ReadOnly = true;
@@ -443,7 +454,7 @@ partial class Form1
         // eventCodeTextBox
         //
         eventCodeTextBox.CharacterCasing = CharacterCasing.Upper;
-        eventCodeTextBox.Location = new Point(120, 695);
+        eventCodeTextBox.Location = new Point(120, 725);
         eventCodeTextBox.Name = "eventCodeTextBox";
         eventCodeTextBox.PlaceholderText = "e.g., EM191";
         eventCodeTextBox.Size = new Size(300, 27);
@@ -451,7 +462,7 @@ partial class Form1
         //
         // startPrintsButton
         //
-        startPrintsButton.Location = new Point(450, 690);
+        startPrintsButton.Location = new Point(450, 720);
         startPrintsButton.Name = "startPrintsButton";
         startPrintsButton.Size = new Size(150, 35);
         startPrintsButton.TabIndex = 21;
@@ -462,7 +473,7 @@ partial class Form1
         // cancelButton
         //
         cancelButton.Enabled = false;
-        cancelButton.Location = new Point(620, 690);
+        cancelButton.Location = new Point(620, 720);
         cancelButton.Name = "cancelButton";
         cancelButton.Size = new Size(150, 35);
         cancelButton.TabIndex = 22;
@@ -473,7 +484,7 @@ partial class Form1
         // label9
         //
         label9.AutoSize = true;
-        label9.Location = new Point(20, 530);
+        label9.Location = new Point(20, 560);
         label9.Name = "label9";
         label9.Size = new Size(77, 20);
         label9.TabIndex = 23;
@@ -482,7 +493,7 @@ partial class Form1
         // label10
         //
         label10.AutoSize = true;
-        label10.Location = new Point(20, 698);
+        label10.Location = new Point(20, 728);
         label10.Name = "label10";
         label10.Size = new Size(85, 20);
         label10.TabIndex = 24;
@@ -492,10 +503,11 @@ partial class Form1
         //
         AutoScaleDimensions = new SizeF(8F, 20F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(880, 740);
+        ClientSize = new Size(880, 770);
         Controls.Add(label11);
         Controls.Add(menuStrip1);
         MainMenuStrip = menuStrip1;
+        Controls.Add(usePrinterSettingsCheckBox);
         Controls.Add(printQualityComboBox);
         Controls.Add(label10);
         Controls.Add(label9);
@@ -585,4 +597,5 @@ partial class Form1
     private Label label10;
     private ComboBox printQualityComboBox;
     private Label label11;
+    private CheckBox usePrinterSettingsCheckBox;
 }
