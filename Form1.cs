@@ -1080,8 +1080,8 @@ public partial class Form1 : Form
 
                 if (printFiles == null || printFiles.Count == 0)
                 {
-                    AddLog("No files to download. Waiting 1 second...");
-                    await Task.Delay(1000, cancellationToken);
+                    AddLog("No files to download. Waiting 2 seconds...");
+                    await Task.Delay(2000, cancellationToken);
                     continue;
                 }
 
@@ -1129,7 +1129,7 @@ public partial class Form1 : Form
             catch (Exception ex)
             {
                 AddLog($"Error in fetch loop: {ex.Message}");
-                await Task.Delay(1000, cancellationToken);
+                await Task.Delay(2000, cancellationToken);
             }
         }
     }

@@ -92,7 +92,7 @@ All printing uses the `PrintDocument` class with the `PrintDocument_PrintPage` e
 1. **Round-robin printer selection**: `currentPrinterIndex` increments on each print, modulo the number of checked printers
 2. **Image disposal**: Always dispose of `Image` objects after use to prevent memory leaks
 3. **Thread-safe logging**: `AddLog()` uses `Invoke()` to update UI from background threads
-4. **Async/await pattern**: Auto-print loop uses async methods with CancellationToken for graceful cancellation
+4. **Async/await pattern**: Auto-print loop uses async methods with CancellationToken for graceful cancellation, polling every 2 seconds
 5. **File system operations**: Download → tmp → ready_prints → print → delete workflow ensures atomic operations
 
 ## Code Organization
