@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PhotoPrinter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4f46688e62064f5bbc5d5cb51866948d556b995d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8a4641c69de3d1d16d7256e4e7a87444ae0274db")]
 [assembly: System.Reflection.AssemblyProductAttribute("PhotoPrinter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PhotoPrinter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
